@@ -8,7 +8,7 @@ import time
 
 #Variables
 spotify_URL = "https://api.spotify.com/v1/"
-config = json.load(open('config.json')) #will probably be removed later
+#config = json.load(open('config.json')) #will probably be removed later
 chart_data = None
 status_code = None
 
