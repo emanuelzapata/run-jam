@@ -1,6 +1,6 @@
 #imports
 import billboard
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flask_restx import Resource, Api
 import requests
 import json
@@ -116,6 +116,10 @@ def generate_playlist():
 @app.route('/get-all-charts')
 def get_all_charts():
     return json.dumps(billboard.charts())
+
+@app.route('/')
+def index():
+    return "index"
 
 if __name__=="__main__":    
     app.run(debug=True)
