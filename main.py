@@ -1,6 +1,6 @@
 #imports
 import billboard
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request
 from flask_restx import Resource, Api
 import requests
 import json
@@ -8,6 +8,7 @@ import time
 
 #Variables
 spotify_URL = "https://api.spotify.com/v1/"
+#config = json.load(open('config.json')) #will probably be removed later
 chart_data = None
 status_code = None
 
@@ -94,32 +95,31 @@ def populate_custom_playlist(playlist_id, bpm, chart_data, bearer_token):
 
 #endpoints
 app = Flask(__name__)
+api = Api(app)
 
-@app.route('/generate-playlist')
-def generate_playlist():
-    #get all headers
-    bearer_token = request.headers['bearer_token']
-    chart_name = request.headers['chart']
-    bpm = request.headers['bpm']
-    user_ID = request.headers['user_ID']
-    #get chart data
-    chart_data = billboard.ChartData(chart_name)
-    chart_data = jsonify_chart_data(chart_data)
-    chart_data = get_all_track_ids(chart_data, bearer_token)
-    chart_data = get_add_track_features(generate_track_ids_query_string(chart_data), bearer_token, chart_data)
-    #generate playlist
-    playlist_info = create_custom_playlist(user_ID, bpm, chart_name, bearer_token)
-    chart_data = filter_chart_data(bpm, chart_data)
-    populate_custom_playlist(playlist_info['id'], bpm, generate_uri_query_string(chart_data), bearer_token)
-    return status_code
+@api.route('/generate-playlist')
+class Run_Jam(Resource):
+    def get(self):
+        #get all headers
+        bearer_token = request.headers['bearer_token']
+        chart_name = request.headers['chart']
+        bpm = request.headers['bpm']
+        user_ID = request.headers['user_ID']
+        #get chart data
+        chart_data = billboard.ChartData(chart_name)
+        chart_data = jsonify_chart_data(chart_data)
+        chart_data = get_all_track_ids(chart_data, bearer_token)
+        chart_data = get_add_track_features(generate_track_ids_query_string(chart_data),bearer_token,chart_data)
+        #generate playlist
+        playlist_info = create_custom_playlist(user_ID, bpm, chart_name, bearer_token)
+        chart_data = filter_chart_data(bpm, chart_data)
+        populate_custom_playlist(playlist_info['id'], bpm, generate_uri_query_string(chart_data), bearer_token)
+        return status_code
 
-@app.route('/get-all-charts')
-def get_all_charts():
-    return json.dumps(billboard.charts())
-
-@app.route('/')
-def index():
-    return "index"
+@api.route('/get-all-charts')
+class Billboard_Charts(Resource):
+    def get(self):
+        return billboard.charts()
 
 if __name__=="__main__":    
     app.run(debug=True)
