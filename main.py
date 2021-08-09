@@ -106,14 +106,11 @@ def generate_playlist():
     chart_data = billboard.ChartData(chart_name)
     chart_data = jsonify_chart_data(chart_data)
     chart_data = get_all_track_ids(chart_data, bearer_token)
-    chart_data = get_add_track_features(
-        generate_track_ids_query_string(chart_data), bearer_token, chart_data)
+    chart_data = get_add_track_features(generate_track_ids_query_string(chart_data), bearer_token, chart_data)
     #generate playlist
-    playlist_info = create_custom_playlist(
-        user_ID, bpm, chart_name, bearer_token)
+    playlist_info = create_custom_playlist(user_ID, bpm, chart_name, bearer_token)
     chart_data = filter_chart_data(bpm, chart_data)
-    populate_custom_playlist(
-        playlist_info['id'], bpm, generate_uri_query_string(chart_data), bearer_token)
+    populate_custom_playlist(playlist_info['id'], bpm, generate_uri_query_string(chart_data), bearer_token)
     return status_code
 
 @app.route('/get-all-charts')
